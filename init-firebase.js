@@ -87,13 +87,14 @@ var database = firebase.database();
 
 function addComment(displayName, email, uid) {
     commentBox = document.getElementById('commentBox');
+    postListRef = database.ref(`users/-LiM8-p3Y6J4KZBTpkXO`)
     var postData = {
         author: displayName,
         uid: uid,
         body: commentBox.value,
     };
     if (commentBox.value.length > 1) {
-        database.ref(`'users/`).push(
+        postListRef.push(
             postData, function (error) {
                 if (error) {
                     // The write failed...
@@ -105,6 +106,8 @@ function addComment(displayName, email, uid) {
             });
     }
 }
+
+var commentsRef = firebase.database().ref(`users/-LiM8-p3Y6J4KZBTpkXO`);
 
 function updateComments() {
     let commentsRef = database.ref('users/');
