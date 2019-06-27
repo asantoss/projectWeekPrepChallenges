@@ -99,14 +99,15 @@ main {
     flex-direction: column;
 }
 #commentSection {
-    flex-grow: 1;
+    flex-grow: .5;
+    margin: 10px;
     justify-self: flex-start;
 }
 #commentBox {
     flex-grow: 1;
     width: 400px;
     height: 250px;
-    margin: 10px 10px;
+    margin: 10px;
     justify-self: flex-end; 
 }
 .comment {
