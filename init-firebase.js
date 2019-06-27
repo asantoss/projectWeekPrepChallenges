@@ -28,6 +28,7 @@ var uiConfig = {
 
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
+        updateComments();
         // User is signed in.
         var displayName = user.displayName;
         var email = user.email;
@@ -37,12 +38,7 @@ firebase.auth().onAuthStateChanged(function (user) {
         var uid = user.uid;
         var providerData = user.providerData;
         // ...
-        //Changes data on the document when the use is logged in.
-        document.getElementById('functionBody').innerHTML = `            <div class="functions">
-        <label for="comment">Comment (20 to 250 characters):</label>
-        <textarea rows=”5” cols=”40” id="commentBox" minlength="4" maxlength="250" value=””></textarea>
-        <button type="submit" id="submitComment">Comment</button>
-    </div>`
+        //Changes data on the document when the use is logged in.     
         document.getElementById('userName').innerHTML = `Welcome ${displayName}!`;
         btn.addEventListener('click', () => {
             firebase.auth().signOut().then(function () {
@@ -87,7 +83,7 @@ var database = firebase.database();
 
 function addComment(displayName, email, uid) {
     commentBox = document.getElementById('commentBox');
-    postListRef = database.ref(`users/-LiM8-p3Y6J4KZBTpkXO`)
+    postListRef = database.ref('users/')
     var postData = {
         author: displayName,
         uid: uid,
@@ -100,18 +96,47 @@ function addComment(displayName, email, uid) {
                     // The write failed...
                     console.log(error)
                 } else {
-                    submitComment.innerHTML = "Submitted"
                     // Data saved successfully!
                 }
             });
     }
+    return updateComments();
 }
 
-var commentsRef = firebase.database().ref(`users/-LiM8-p3Y6J4KZBTpkXO`);
+var commentsRef = firebase.database().ref('users/');
+// commentsRef.on('child_added', function (data) {
+//     console.log(data.value)
+// })
 
-function updateComments() {
-    let commentsRef = database.ref('users/');
-    commentsRef.on('value', function (snapshot) {
-        console.log(commentsRef, snapshot.val())
+var commentsContainer = document.getElementById('commentSection');
+// var commentsArray = [];
+function fetchComments() {
+    commentsRef.once('value', function (snapshot) {
+        snapshot.forEach(function (childSnapshot) {
+            var childKey = childSnapshot.key;
+            var childData = childSnapshot.val();
+            // ...
+            commentHTML = `<div class="comment"><div><h5 class="comment_header">${childData.author}</h5><p class="comment_body">${childData.body}</p></div><div class="comment_links">
+            <button onClick="removeComment('${childKey}')">Remove</button></div></div>`
+            commentsArray.push(commentHTML);
+        });
     });
 }
+
+function removeComment(commentID) {
+    comment = firebase.database().ref(`users/${commentID}`)
+    comment.remove();
+    return updateComments();
+}
+
+
+
+function updateComments() {
+    commentsArray = []
+    fetchComments();
+    setTimeout(() => {
+        return commentsContainer.innerHTML = commentsArray.join('');
+    }, 1000)
+}
+
+
