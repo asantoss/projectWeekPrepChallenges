@@ -26,15 +26,18 @@ function initMap() {
     markersOn = false
     document.getElementById('markers').addEventListener('click', e => {
         e.preventDefault();
+        console.log(this)
         if (!markersOn) {
             cityMarkers.forEach(marker => {
                 marker.setMap(map)
             })
+            document.getElementById('markers').innerHTML = 'Remove Markers'
             return markersOn = true
         } else {
             cityMarkers.forEach(marker => {
                 marker.setMap(null)
             })
+            document.getElementById('markers').innerHTML = 'Set Markers'
             return markersOn = false
         }
     })
